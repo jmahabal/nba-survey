@@ -1,29 +1,66 @@
 <!DOCTYPE html>
+
+<!-- 
+
+Make mobile-friendly
+Fix conflicts with numbers and bars w/o increasing svg width
+
+ -->
+
 <meta charset="utf-8">
 <style>
 
-body {
-  font: 10px sans-serif;
+body, html {
+  font-size: 10px;
+  font-family: "News Cycle", sans-serif;
   margin: 0;
 }
 
 svg {
-  border: 1px solid black;
+  /*border: 1px solid black;*/
 }
+
+.team-bar-chart {
+  padding: 1rem;
+}
+
+.team-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+/* Axes Styles */
+
+.tick line {
+  stroke-dasharray: "(5, 5)";
+  stroke: black;
+  opacity: 0.2;
+}
+
+.axis.y path {
+  visibility: hidden;
+}
+
+/* Interactivity styles */
 
 .bar {
   fill: steelblue;
+}
+
+.age-selected {
+  fill: pink;
 }
 
 </style>
 <body>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=News+Cycle:400,700" rel="stylesheet">
 <script>
 
 const margin = {top: 25, right: 25, bottom: 25, left: 25},
-    width = 170 - margin.left - margin.right,
-    height = 150 - margin.top - margin.bottom;
+      width = 200 - margin.left - margin.right,
+      height = 200 - margin.top - margin.bottom;
 
 d3.csv("team_by_age.csv", function(error, data) {
 
@@ -51,50 +88,49 @@ d3.csv("team_by_age.csv", function(error, data) {
     .enter().append("svg:svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .attr("class", "team-bar-chart")
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Add interactivity
-  const caption = svg.append("text")
-    .attr("class", "caption")
-    .attr("text-anchor", "middle")
-    .style("pointer-events", "none")
-    .attr("dy", -8)
- 
-  const curAgeBracket = svg.append("text")
-    .attr("class", "age-bracket")
-    .attr("text-anchor", "middle")
-    .style("pointer-events", "none")
-    .attr("dy", margin.bottom/2)
-    .attr("x", width/2)
-    .attr("y", height)
-
+  // Interactivity functions
   const mouseover = (d) => {
-    // circle.attr("opacity", 1.0)
-    // d3.selectAll(".static_year").classed("hidden", true)
     mousemove.call(this)
   }
 
   const mouseout = (d) => {
-    // d3.selectAll(".static_year").classed("hidden", false)
-    // circle.attr("opacity", 0)
     caption.text("")
     curAgeBracket.text("")
+    d3.selectAll(".age-bracket-"+d.age.split(" ")[0])
+      .classed("age-selected", false);
   }
 
   const mousemove = (d) => {
-
-    console.log(d, yScale(d.id))
-
     caption
       .attr("x", xScale(d.age))
-      .attr("y", yScale(d.id))
-      .text(d.id)
+      .attr("y", c => {
+        // So, so sorry for all the one-letter variables
+        return yScale(_.find(c.values, a => a.age == d.age).id);
+      })
+      .text(c => _.find(c.values, a => a.age == d.age).id);
    
     curAgeBracket
       .text(d.age)
 
+    d3.selectAll(".age-bracket-"+d.age.split(" ")[0])
+      .classed("age-selected", true);
   }
+
+  // Add an axis for each chart.
+  yAxis = d3.axisLeft()
+    .scale(yScale)
+    .ticks(2)
+    .tickSizeInner(0)
+    .tickSizeOuter(0)
+    .tickSize(-width)
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
 
   // Add the bars elements. 
   // We're using normalized_age, as opposed to total age.
@@ -103,7 +139,9 @@ d3.csv("team_by_age.csv", function(error, data) {
       return d.values;
     }).enter()
     .append("rect")
-    .attr("class", "bar")
+    .attr("class", d => {
+      return "bar age-bracket-"+d.age.split(" ")[0];
+    })
     .attr("width", xScale.bandwidth())
     .attr("height", d => yScale(yMax - d.id))
     .attr("x", d => xScale(d.age))
@@ -117,19 +155,26 @@ d3.csv("team_by_age.csv", function(error, data) {
     .attr("x", width/2)
     .attr("y", -margin.top/2)
     .style("text-anchor", "middle")
+    .attr("class", "team-title")
+    .attr("alignment-baseline", "middle")
     .text(function(d) { return d.key; });
 
-  // Add an axis for each chart.
-  yAxis = d3.axisLeft()
-    .scale(yScale)
-    .ticks(1)
-    .tickSizeInner(0)
-    .tickSizeOuter(0)
-    .tickSize(-width)
-
-  svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis)
+  // Add interactivity text boxes
+  const caption = svg.append("text")
+    .attr("class", "caption")
+    .attr("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .attr("dy", -5)
+    .attr("dx", xScale.bandwidth()/2)
+ 
+  const curAgeBracket = svg.append("text")
+    .attr("class", "age-bracket")
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "middle")
+    .style("pointer-events", "none")
+    .attr("dy", margin.bottom/2)
+    .attr("x", width/2)
+    .attr("y", height)
 
 });
 
