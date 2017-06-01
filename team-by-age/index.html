@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+  margin: 0;
+}
+
+svg {
+  border: 1px solid black;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<script>
+
+const margin = {top: 25, right: 25, bottom: 25, left: 25},
+    width = 170 - margin.left - margin.right,
+    height = 150 - margin.top - margin.bottom;
+
+d3.csv("team_by_age.csv", function(error, data) {
+
+  data.forEach(d => d.id = parseInt(d.id));
+  const yMax = _.max(data.map(d => d.id));
+  const yScale = d3.scaleLinear()
+      .domain([0, yMax])
+      .range([height, 0]);
+
+  const xScale = d3.scaleBand()
+      .domain(_.uniq(data.map(d => d.age)).sort())
+      .range([0, width])
+      .padding(0.1);
+
+  // Nest data by symbol.
+  const teams = d3.nest()
+      .key(d => d.team)
+      .entries(data);
+
+  console.log(teams);
+
+  // Add an SVG element for each symbol, with the desired dimensions and margin.
+  const svg = d3.select("body").selectAll("svg")
+      .data(teams)
+    .enter().append("svg:svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Add interactivity
+  const caption = svg.append("text")
+    .attr("class", "caption")
+    .attr("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .attr("dy", -8)
+ 
+  const curAgeBracket = svg.append("text")
+    .attr("class", "age-bracket")
+    .attr("text-anchor", "middle")
+    .style("pointer-events", "none")
+    .attr("dy", margin.bottom/2)
+    .attr("x", width/2)
+    .attr("y", height)
+
+  const mouseover = (d) => {
+    // circle.attr("opacity", 1.0)
+    // d3.selectAll(".static_year").classed("hidden", true)
+    mousemove.call(this)
+  }
+
+  const mouseout = (d) => {
+    // d3.selectAll(".static_year").classed("hidden", false)
+    // circle.attr("opacity", 0)
+    caption.text("")
+    curAgeBracket.text("")
+  }
+
+  const mousemove = (d) => {
+
+    console.log(d, yScale(d.id))
+
+    caption
+      .attr("x", xScale(d.age))
+      .attr("y", yScale(d.id))
+      .text(d.id)
+   
+    curAgeBracket
+      .text(d.age)
+
+  }
+
+  // Add the bars elements. 
+  // We're using normalized_age, as opposed to total age.
+  svg.selectAll(".teams")
+    .data(d => {
+      return d.values;
+    }).enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => yScale(yMax - d.id))
+    .attr("x", d => xScale(d.age))
+    .attr("y", d => yScale(d.id))
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout);
+
+  // Add a small label for the symbol name.
+  svg.append("text")
+    .attr("x", width/2)
+    .attr("y", -margin.top/2)
+    .style("text-anchor", "middle")
+    .text(function(d) { return d.key; });
+
+  // Add an axis for each chart.
+  yAxis = d3.axisLeft()
+    .scale(yScale)
+    .ticks(1)
+    .tickSizeInner(0)
+    .tickSizeOuter(0)
+    .tickSize(-width)
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+
+});
+
+</script>
