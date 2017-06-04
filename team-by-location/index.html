@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<style>
+
+svg {
+  border: 1px black solid;
+}
+
+.label-highlighted {
+  font-size: 0.8rem;
+  fill: maroon;
+}
+
+</style>
+<body>
+<title>/r/NBA Users by Team and Home State</title>
+<h1 class="title">/r/NBA Users by Team and Home State</h1>
+
+<div class="heatmap"></div>
+
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=News+Cycle:400,700" rel="stylesheet">
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<script>
+
+const cellSize = 13;
+const margin = {top: 125, right: 25, bottom: 25, left: 125},
+      width = cellSize*52,
+      height = cellSize*32;
+
+d3.csv("team_by_home_state.csv", function(error, data) {
+
+  console.log(data);
+  
+  // const teams = _.uniq(data.map(d => d.team));
+  // Order teams by region, roughly
+  const teams = ['Toronto Raptors', 'Boston Celtics', 'New York Knicks', 'Brooklyn Nets',
+                 'Philadelphia 76ers', 'Washington Wizards', 'Charlotte Hornets', 
+                 'Memphis Grizzlies', 'Atlanta Hawks', 'Miami Heat', 'Orlando Magic',
+                 'Milwaukee Bucks', 'Minnesota Timberwolves', 'Detroit Pistons', 'Chicago Bulls',
+                 'Cleveland Cavaliers', 'Indiana Pacers', 'New Orleans Pelicans', 'Houston Rockets',
+                 'Dallas Mavericks', 'San Antonio Spurs', 'Oklahoma City Thunder', 'Denver Nuggets',
+                 'Utah Jazz', 'Phoenix Suns', 'Sacramento Kings', 'Golden State Warriors', 
+                 'Los Angeles Lakers', 'LA Clippers', 'Seattle Super Sonics', 'Portland Trail Blazers', 
+                 'Other']
+
+  // const states = _.uniq(data.map(d => d.state));
+  // Order states by region, roughly
+  const states = ["Maine", "New Hampshire", "Vermont", "Massachusetts", "Connecticut",
+                  "Rhode Island", "New York", "New Jersey", "Pennsylvania", "Delaware", "Maryland",
+                  "Virginia", "West Virginia", "North Carolina", "South Carolina", 
+                  "Georgia", "Florida", "Kentucky", "Tennessee", "Alabama", "Mississippi", "Ohio", 
+                  "Michigan", "Indiana", "Illinois", "Wisconsin", "Minnesota", "Iowa", "Missouri",
+                  "Kansas", "Nebraska", "South Dakota", "North Dakota", "Arkansas", "Louisiana", 
+                  "Oklahoma", "Texas", "Montana", "Wyoming", "Colorado", "Idaho", "Utah", "New Mexico", 
+                  "Arizona", "Nevada", "California", "Oregon", "Washington", "Alaska", "Hawaii", "Other"]
+
+  console.log(teams.length, states.length)
+
+
+  const xScale = d3.scaleBand()
+    .domain(states)
+    .range([0, width])
+    .paddingInner(0.1)
+    .paddingOuter(0);
+
+  const yScale = d3.scaleBand()
+    .domain(teams)
+    .range([0, height])
+    .paddingInner(0.1)
+    .paddingOuter(0);
+
+  const countMax = _.max(data.map(d => d.count));
+  const color = d3.scaleSequential(d3.interpolateBlues);
+  const colorScale = d3.scaleLog() // Is using a log scale wrong? Hmm...
+    .domain([1, countMax])
+    .range([0, 1])
+
+  const svg = d3.selectAll(".heatmap")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Interactivity functions
+
+  const mouseover = (d) => {
+    mousemove.call(this);
+  }
+
+  const mouseout = (d) => {
+    d3.selectAll(".t-"+_.kebabCase(d.team))
+      .classed("label-highlighted", false)
+    d3.selectAll(".s-"+_.kebabCase(d.state))
+      .classed("label-highlighted", false)
+  }
+
+  const mousemove = (d) => {
+    d3.selectAll(".t-"+_.kebabCase(d.team))
+      .classed("label-highlighted", true)
+    d3.selectAll(".s-"+_.kebabCase(d.state))
+      .classed("label-highlighted", true)
+  }
+
+  // Construct the actual heatmap
+
+  svg.selectAll("rect")
+    .data(data).enter()
+    .append("rect")
+    .attr("x", d => xScale(d.state))
+    .attr("y", d => yScale(d.team))
+    .attr("width", xScale.bandwidth())
+    .attr("height", yScale.bandwidth())
+    .attr("fill", d => color(colorScale(d.count)))
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout);;
+
+  // Add axes
+
+  yAxis = d3.axisLeft()
+    .tickSize(0)
+    .scale(yScale);
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+  .selectAll("text")
+    .attr("class", d => "t-"+_.kebabCase(d));
+
+  xAxis = d3.axisTop()
+    .tickSize(0)
+    .scale(xScale);
+
+  svg.append("g")
+    .attr("class", "x axis")
+    .call(xAxis)
+  .selectAll("text")
+    .attr("dx", "-0.5rem")
+    .attr("dy", xScale.bandwidth()/4)
+    .attr("class", d => "s-"+_.kebabCase(d))
+    .attr("transform", "rotate(90)")
+    .attr("alignment-baseline", "middle")
+    .style("text-anchor", "end");
+
+});
+
+</script>
