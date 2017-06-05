@@ -3,13 +3,46 @@
 <meta charset="utf-8">
 <style>
 
+body, html {
+  font-size: 12px;
+  font-family: 'Roboto', 'Inconsolata', sans-serif;
+  margin: 0;
+  text-align: center;
+}
+
 svg {
   border: 1px black solid;
 }
 
+.legend, .legendCells {
+  /*text-align: center;*/
+}
+
+.count-square:hover{
+  /*stroke: black;*/
+  stroke-width: 1px;
+  stroke: rgb(253,100,103); 
+}
+
+/* Axis styling */
+
+.axis path {
+  stroke: black;
+  opacity: 0.1;
+}
+
+/* Interaction styles */
+
 .label-highlighted {
-  font-size: 0.8rem;
-  fill: maroon;
+  fill: white;
+}
+
+.highlight-rect {
+  fill: rgb(4,108,154);
+}
+
+.rect-hidden {
+  display: none;
 }
 
 </style>
@@ -21,19 +54,18 @@ svg {
 
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=News+Cycle:400,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata|Alegreya+Sans+SC|Roboto" rel="stylesheet">
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
 
 <script>
 
-const cellSize = 13;
-const margin = {top: 125, right: 25, bottom: 25, left: 125},
+const cellSize = 15;
+const margin = {top: 175, right: 125, bottom: 0, left: 125},
       width = cellSize*52,
       height = cellSize*32;
 
 d3.csv("team_by_home_state.csv", function(error, data) {
-
-  console.log(data);
   
   // const teams = _.uniq(data.map(d => d.team));
   // Order teams by region, roughly
@@ -58,9 +90,6 @@ d3.csv("team_by_home_state.csv", function(error, data) {
                   "Oklahoma", "Texas", "Montana", "Wyoming", "Colorado", "Idaho", "Utah", "New Mexico", 
                   "Arizona", "Nevada", "California", "Oregon", "Washington", "Alaska", "Hawaii", "Other"]
 
-  console.log(teams.length, states.length)
-
-
   const xScale = d3.scaleBand()
     .domain(states)
     .range([0, width])
@@ -77,7 +106,7 @@ d3.csv("team_by_home_state.csv", function(error, data) {
   const color = d3.scaleSequential(d3.interpolateBlues);
   const colorScale = d3.scaleLog() // Is using a log scale wrong? Hmm...
     .domain([1, countMax])
-    .range([0, 1])
+    .range([d3.interpolateBlues(0), d3.interpolateBlues(1)])
 
   const svg = d3.selectAll(".heatmap")
     .append("svg")
@@ -97,6 +126,10 @@ d3.csv("team_by_home_state.csv", function(error, data) {
       .classed("label-highlighted", false)
     d3.selectAll(".s-"+_.kebabCase(d.state))
       .classed("label-highlighted", false)
+    d3.selectAll(".t-rect")
+      .classed("rect-hidden", true)
+    d3.selectAll(".s-rect")
+      .classed("rect-hidden", true)
   }
 
   const mousemove = (d) => {
@@ -104,6 +137,14 @@ d3.csv("team_by_home_state.csv", function(error, data) {
       .classed("label-highlighted", true)
     d3.selectAll(".s-"+_.kebabCase(d.state))
       .classed("label-highlighted", true)
+    d3.selectAll(".t-rect")
+      .classed("rect-hidden", false)
+      .attr("y", yScale(d.team))
+    d3.selectAll(".s-rect")
+      .classed("rect-hidden", false)
+      .attr("x", xScale(d.state))
+
+
   }
 
   // Construct the actual heatmap
@@ -111,14 +152,33 @@ d3.csv("team_by_home_state.csv", function(error, data) {
   svg.selectAll("rect")
     .data(data).enter()
     .append("rect")
+    .attr("class", "count-square")
     .attr("x", d => xScale(d.state))
     .attr("y", d => yScale(d.team))
     .attr("width", xScale.bandwidth())
     .attr("height", yScale.bandwidth())
-    .attr("fill", d => color(colorScale(d.count)))
+    .attr("fill", d => colorScale(d.count))
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
-    .on("mouseout", mouseout);;
+    .on("mouseout", mouseout);
+
+  // Add background rects for highlighting 
+
+  svg.append("rect")
+    .attr("class", "highlight-rect t-rect")
+    .attr("x", -margin.left)
+    .attr("y", 0)
+    .classed("rect-hidden", true)
+    .attr("width", margin.left)
+    .attr("height", yScale.bandwidth());
+
+  svg.append("rect")
+    .attr("class", "highlight-rect s-rect")
+    .attr("y", -margin.left)
+    .attr("x", 0)
+    .classed("rect-hidden", true)
+    .attr("height", margin.left)
+    .attr("width", xScale.bandwidth());
 
   // Add axes
 
@@ -146,6 +206,25 @@ d3.csv("team_by_home_state.csv", function(error, data) {
     .attr("transform", "rotate(90)")
     .attr("alignment-baseline", "middle")
     .style("text-anchor", "end");
+
+  // Add legend
+  
+  var legend = d3.legendColor()
+      .cells([1, 5, 10, 50, countMax])
+      .shapeWidth(2*cellSize)
+      .labelFormat(d3.format("2"))
+      .orient('horizontal')
+      .scale(colorScale);
+
+  svg.append("g")
+    .attr("class", "legend")
+    .attr("text-anchor", "middle")
+    .attr("transform", "translate(" + (width/2) + ",-" + (margin.top) + ")")
+    .call(legend)
+  // .append("text")
+  //   .attr("transform", "translate(" + (width/2) + ",-" + (margin.top) + ")")
+  //   .attr("stroke", "black")
+  //   .text("Count of folks");
 
 });
 
