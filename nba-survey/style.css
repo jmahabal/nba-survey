@@ -1,0 +1,224 @@
+/* Mobile CSS */
+
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em; }
+  .btn { font-size: 0.7rem; }
+  .grid { padding-top: 1rem; }
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em;}
+  .btn { font-size: 0.7rem; }
+  .grid { padding-top: 1rem; }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em;}
+  .btn { font-size: 0.7rem; }
+  .grid { padding-top: 2rem; }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+  body { font-size: 16px; }
+  h1 { padding-top: 0.9em; font-size: 2em; }
+  .btn { font-size: 0.8rem; }
+  .grid { padding-top: 3rem; }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+  body { font-size: 14px; }
+  h1 { padding-top: 1.15em; font-size: 2em; }
+  .grid { padding-top: 3rem; }
+  .btn { font-size: 0.8rem; }
+
+}
+
+/* CSS */
+/*
+ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 1.2em;
+    text-indent: -1.2em;
+}
+
+li:before {
+    content: "🏀";
+    display: block;
+    float: left;
+    width: 1.2em;
+}*/
+code {
+  background-color: rgb(250,239,209);
+}
+
+hr {
+  margin: 2rem 0rem;
+  border-top: 1px solid #8c8b8b;
+  text-align: center;
+}
+hr:after {
+  content: '🏀';
+  display: inline-block;
+  position: relative;
+  top: -14px;
+  /*padding: 0 10px;*/
+  /*background: #f0f0f0;*/
+  /*color: #8c8b8b;*/
+  font-size: 18px;
+}
+
+.chart-title {
+  text-align: left;
+}
+
+.description-container {
+  text-align: left;
+  padding: 0rem 0rem 2rem 0rem;
+}
+
+.description {
+  text-align: left;
+  /*padding: 0rem 0rem 2rem 0rem;*/
+}
+
+body, html {
+  font-family: 'Roboto', 'Inconsolata', sans-serif;
+  text-align: center;
+}
+
+svg {
+  /*border: 1px black solid;*/
+}
+
+.legend-text {
+  text-anchor: middle;
+  alignment-baseline: middle;
+  text-align: center;
+  font-size: .7rem;
+}
+
+.team-bar-chart {
+  /* Based on height of grid-item, change dynamically when refactoring */
+  padding-bottom: 250px; 
+}
+
+.grid {
+  text-align: center;
+  margin: auto;
+  display: block;
+}
+
+.team-title {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.background path {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+  stroke: rgb(4,108,154);
+  opacity: 0.3;
+}
+
+/* Axis styling */
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: black;
+  opacity: 0.1;
+  shape-rendering: crispEdges;
+}
+
+.tick line {
+  stroke: black;
+  opacity: 0.2;
+}
+
+.bar-axis.axis.y path {
+  visibility: hidden;
+}
+
+/* Interaction styles */
+
+.caption-text {
+  font-size: 1rem;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+
+.bar-text, .ethnicity-axis {
+  fill: black;
+  font-size: 0.8rem;
+}
+
+.count-text {
+  font-size: 0.7rem;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+
+.label-highlighted {
+  fill: white;
+  stroke: none;
+}
+
+.highlight-rect, .caption-text {
+  fill: rgb(253,100,103);
+  stroke: none;
+}
+
+.rect-hidden, .caption-hidden, .pale-line, .caption-line-hidden {
+  display: none;
+}
+
+.square-stroke-hidden {
+  stroke-width: 0;
+}
+
+.tick, .age-bracket, .sort-by-btn-group {
+  font-family: 'Roboto', 'Inconsolata', sans-serif;
+  font-size: 0.75rem;
+}
+
+.team-highlighted {
+  stroke: rgb(253,100,103) !important;
+  opacity: 1 !important;
+  stroke-width: 2;
+}
+
+.count-square:hover, .legend-rect-highlighted{
+  /*stroke: black;*/
+  stroke-width: 1px;
+  stroke: rgb(253,100,103); 
+}
+
+.bar {
+  fill: steelblue;
+  fill: rgb(4,108,154);
+}
+
+.age-selected {
+  fill: pink;
+  fill: rgb(236,203,174);
+  fill: rgb(253,100,103);
+}
+
+.caption-line {
+  stroke: black;
+}

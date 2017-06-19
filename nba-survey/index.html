@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+
+<meta name="description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like.">
+<link rel="author" href="http://www.twitter.com/JayMahabal"/>
+<meta property="og:title" content="/r/NBA User Survey 2017"/>
+<meta property="og:type" content="article"/>
+<meta property="og:image" content="/preview.png"/>
+<meta property="og:description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like."/>
+
+<!-- 
+
+To do:
+
+- Add city/state demographics to parallel coordinates bar chart
+- Separate out legend for heatmap
+- Make mobile pixel-perfect (and deal with heatmap..?)
+
+-->
+
+</head>
+<body>
+<title>/r/NBA Users by Team and Home State</title>
+
+<div class='container'>
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="title">
+      	<code><a href="http://www.reddit.com/r/nba">/r/NBA</a></code> User Survey 2017
+	  </h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+    	<hr>
+    </div>
+  </div>
+
+   <div class="description-container">
+	  <div class="row">
+	    <div class="col-md-6">
+	      <h1 class="chart-title">Fanbase and Ethnicity</h1>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <p class="description">The following parallel coordinates chart shows the ethnicity breakdown of the /r/NBA community by fanbase, with each axis representing the number of people who self-identify as that ethnicity, as a percentage of the fanbase. You can hover over each line to identify the fanbase or type in your desired fanbase in the search box.</p>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <ul>
+	      	<li>Diverse fanbases tend to be located in diverse states, such as California or Texas.</li>
+	      	<li>The Lakers fanbase has a higher percentage of Asian / Pacific Islanders than the Clippers fanbase, even though both are in the same city.</li>
+	      	<li>There's a similar story for the Brooklyn Nets vs. the Knicks... though can this be explained in part by the <code><a href="http://bleacherreport.com/articles/2692897-jeremy-lin-remains-an-american-icon-even-five-years-after-linsanity">Jeremy Lin</a></code> effect?</li>
+	      </ul>
+	    </div>
+	  </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div id="scrollable-dropdown-menu">
+        <input class="typeahead tt-input" type="text" placeholder="NBA Team">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="parcoords"></div>
+
+<div class='container'>
+
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+    	<hr>
+    </div>
+  </div>
+
+  <div class="description-container">
+	  <div class="row">
+	    <div class="col-md-6">
+	      <h1 class="chart-title">Fanbase and Location</h1>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <p class="description">The following heatmap shows the count of the number of people from each state that support each NBA franchise. You can hover over each cell to find out the exact count, as well as to clarify which team and state it represents.</p>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <ul>
+	      	<li>Fandom aligns pretty closely with location, especially when states don't have a team of their own (see Boston and Portland).</li>
+	      	<li>Most Raptors fans are, unsurprisingly, international. However, the chart doesn't disambiguate between 'Other' and 'Unknown' locations though, so it's not appropriate to say that there are more NBA fans internationally than there are domestically.</li>
+	      </ul>
+	    </div>
+	  </div>
+  </div>
+
+</div>
+
+<div class="heatmap"></div>
+
+<div class='container'>
+
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+    	<hr>
+    </div>
+  </div>
+
+  <div class="description-container">
+	  <div class="row">
+	    <div class="col-md-6">
+	      <h1 class="chart-title">Fanbase and Age</h1>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <p class="description">The following bar charts show the breakdown by age of the various NBA fanbases on /r/NBA by raw counts. You can hover over a bar to find the exact count of people in that age range, as well as to compare between fanbases.</p>
+	    </div>
+	  </div>
+	  <div class="row">
+	    <div class="col-md-6">
+	      <ul>
+	      	<li>Most users are pretty young, in their late teens or early 20's.</li>
+	      	<li>There are however definitely trends, like how the no-longer-a-team SuperSonics skew older.</li>
+	      </ul>
+	    </div>
+	  </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="sort-by-btn-group btn-group" data-toggle="buttons">
+        <label class="btn btn-outline-primary active">
+          <input class="shuffle-btn" type="radio" name="options" id="team" checked>Team Name
+        </label>
+        <label class="btn btn-outline-primary">
+          <input class="shuffle-btn" type="radio" name="options" id="numberOfUsers">Size of Fanbase
+        </label>
+        <label class="btn btn-outline-primary">
+          <input class="shuffle-btn" type="radio" name="options" id="fanbaseAge">Fanbase Age
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid"></div>
+
+<div class='container'>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <hr>
+      <p class="description">For any questions or comments, please contact <code><a href="https://www.twitter.com/JayMahabal">@JayMahabal</a></code>. Data and methodology can be found <code><a href="https://github.com/jmahabal/nba-survey">here</a></code>.</p>
+    </div>
+  </div>
+</div>
+
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Inconsolata|Alegreya+Sans+SC|Roboto" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="typeahead.css">
+<script src="typeahead.min.js" async></script>
+
+<script src="ethnicity.js"></script>
+<script src="location.js"></script>
+<script src="age.js"></script>

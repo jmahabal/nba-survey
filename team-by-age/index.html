@@ -1,33 +1,55 @@
 <!DOCTYPE html>
 
-<!-- 
-
-Make mobile-friendly
-fix console log messages
-sort by age
-change font family
-
--->
-
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like.">
+<link rel="author" href="http://www.twitter.com/JayMahabal"/>
+<meta property="og:title" content="/r/NBA Users by Team and Age"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="http://unbecoming-chain.surge.sh"/>
+<meta property="og:image" content="http://unbecoming-chain.surge.sh/preview.png"/>
+<meta property="og:description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like."/>
 
 <body>
 <title>/r/NBA Users by Team and Age</title>
-<h1 class="title">/r/NBA Users by Team and Age</h1>
+<div class='container'>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <h1 class="title">/r/NBA Users by Team and Age</h1>
+      <p class="description">The following bar charts are the age distributions of the fanbases of each NBA team. You can hover over the bars to view the exact number and to compare between teams.</p>
+    </div>
+  </div>
 
-<div class="sort-by-btn-group btn-group" data-toggle="buttons">
-  <label class="btn btn-outline-primary active">
-    <input class="shuffle-btn" type="radio" name="options" id="team" checked>Team Name
-  </label>
-  <label class="btn btn-outline-primary">
-    <input class="shuffle-btn" type="radio" name="options" id="numberOfUsers">Size of Fanbase
-  </label>
-  <label class="btn btn-outline-primary">
-    <input class="shuffle-btn" type="radio" name="options" id="fanbaseAge">Fanbase Age
-  </label>
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="sort-by-btn-group btn-group" data-toggle="buttons">
+        <label class="btn btn-outline-primary active">
+          <input class="shuffle-btn" type="radio" name="options" id="team" checked>Team Name
+        </label>
+        <label class="btn btn-outline-primary">
+          <input class="shuffle-btn" type="radio" name="options" id="numberOfUsers">Size of Fanbase
+        </label>
+        <label class="btn btn-outline-primary">
+          <input class="shuffle-btn" type="radio" name="options" id="fanbaseAge">Fanbase Age
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="grid"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <hr>
+      <p class="description">For any questions or comments, please contact <a href="https://www.twitter.com/JayMahabal">@JayMahabal</a>. Data and methodology can be found at <a href="github.com">Github</a>.</p>
+    </div>
+  </div>
 </div>
-
-<div class="grid"></div>
 
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
@@ -41,10 +63,55 @@ change font family
 
 <style>
 
+/* Mobile CSS */
+
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em; }
+  .btn { font-size: 0.6rem; }
+  .grid { padding-top: 2rem; }
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em;}
+  .btn { font-size: 0.6rem; }
+  .grid { padding-top: 2rem; }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+  body { font-size: 16px; }
+  h1 { padding-top: .4em; font-size: 2em;}
+  .btn { font-size: 0.7rem; }
+  .grid { padding-top: 3rem; }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+  body { font-size: 16px; }
+  h1 { padding-top: 0.9em; font-size: 2em; }
+  .btn { font-size: 0.8rem; }
+  .grid { padding-top: 5rem; }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+  body { font-size: 14px; }
+  h1 { padding-top: 1.15em; font-size: 2em; }
+  .grid { padding-top: 5rem; }
+  .btn { font-size: 0.8rem; }
+
+}
+
+/* CSS */
+ 
 body, html {
-  font-size: 12px;
+  /*font-size: 12px;*/
   font-family: 'Roboto', 'Inconsolata', sans-serif;
-  margin: 0;
+  /*margin: 0;*/
   text-align: center;
 }
 
@@ -54,12 +121,12 @@ svg {
 
 .caption, .tick, .age-bracket, .sort-by-btn-group {
   font-family: sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 
-.title {
+.description {
   text-align: center;
-  padding: 3rem 0rem 1rem 0rem;
+  padding: 1rem 0rem 1rem 0rem;
 }
 
 .team-bar-chart {
@@ -69,13 +136,12 @@ svg {
 
 .grid {
   text-align: center;
-  margin: 0 auto;
+  margin: auto;
   display: block;
-  padding-top: 5rem;
 }
 
 .team-title {
-  font-size: 1.35rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 
@@ -100,6 +166,7 @@ svg {
 .age-selected {
   fill: pink;
   fill: rgb(236,203,174);
+  fill: rgb(253,100,103);
 }
 
 .caption-line {
@@ -114,13 +181,18 @@ svg {
 
 <script>
 
-const itemWidth = 300;
-const margin = {top: 25, right: 25, bottom: 25, left: 25},
+// Change depending on window size
+const windowWidth = $(window).width();
+console.log(windowWidth);
+const itemWidth = windowWidth < 600 ? Math.floor(windowWidth * 0.9) : 300;
+console.log(itemWidth);
+// const itemWidth = 300;
+const margin = {top: 40, right: 40, bottom: 40, left: 40},
       width = itemWidth - margin.left - margin.right,
       height = 200 - margin.top - margin.bottom;
 
 d3.selectAll(".grid")
-  .style("width", (Math.floor($(window).width() / itemWidth) - 1) * itemWidth + "px")
+  .style("width", (Math.max(1, Math.floor($(window).width() / itemWidth) - 1)) * itemWidth + "px")
 
 d3.csv("team_by_age.csv", function(error, data) {
 
@@ -200,7 +272,7 @@ d3.csv("team_by_age.csv", function(error, data) {
       .attr("y2", c => yScale(_.find(c.values, a => a.age == d.age).id));
    
     curAgeBracket
-      .text(d.age)
+      .text(d.age == "Other" ? "Unknown" : d.age)
 
     d3.selectAll(".caption-line")
       .classed("caption-line-hidden", false);
@@ -242,7 +314,7 @@ d3.csv("team_by_age.csv", function(error, data) {
     .style("text-anchor", "middle")
     .attr("class", "team-title")
     .attr("alignment-baseline", "middle")
-    .text(function(d) { return d.key; });
+    .text(d => d.key == "Other" ? "Other / Unknown" : d.key);
 
   // Add interactivity text boxes
   const caption = svg.append("text")

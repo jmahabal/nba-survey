@@ -1,162 +1,8 @@
-<!DOCTYPE html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta charset="utf-8">
-
-<meta name="description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like.">
-<link rel="author" href="http://www.twitter.com/JayMahabal"/>
-<meta property="og:title" content="/r/NBA Users by Team and Location"/>
-<meta property="og:type" content="article"/>
-<meta property="og:image" content="/preview.png"/>
-<!-- <meta property="og:url" content=""/> -->
-<meta property="og:description" content="Each year /r/NBA hosts a user survey, giving us insight into what NBA fans are like."/>
-
-</head>
-<body>
-<title>/r/NBA Users by Team and Home State</title>
-
-<div class='container'>
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <h1 class="title">/r/NBA Users by Team and Home State</h1>
-    </div>
-    <div class="col-md-6 offset-md-3">
-      <p class="description">This heatmap highlights where a teams fans are from. You can hover over each cell to display the exact count of fans. We're using a log scale for the counts, and let international fans fall under 'Other'.</p>
-      <p class="description mobile-only">This interactive was created for a desktop viewing experience.</p>
-    </div>
-  </div>
-</div>
-
-<div class="heatmap"></div>
-
-<div class='container'>
-  <div class="row">
-    <div class="col-md-6 offset-md-3">
-      <hr>
-      <p class="description">For any questions or comments, please contact <a href="https://www.twitter.com/JayMahabal">@JayMahabal</a>. Data and methodology can be found at <a href="github.com">Github</a>.</p>
-    </div>
-  </div>
-</div>
-
-<script src="//d3js.org/d3.v4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Inconsolata|Alegreya+Sans+SC|Roboto" rel="stylesheet">
-<!-- <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script> -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-
-<style>
-
-/* Mobile CSS */
-
-/* Custom, iPhone Retina */ 
-@media only screen and (min-width : 320px) {
-  body { font-size: 16px; }
-  h1 { padding-top: .4em; font-size: 2em; }
-}
-
-/* Extra Small Devices, Phones */ 
-@media only screen and (min-width : 480px) {
-  body { font-size: 16px; }
-  h1 { padding-top: .4em; font-size: 2em;}
-}
-
-/* Small Devices, Tablets */
-@media only screen and (min-width : 768px) {
-  body { font-size: 16px; }
-  h1 { padding-top: .4em; font-size: 2em;}
-}
-
-/* Medium Devices, Desktops */
-@media only screen and (min-width : 992px) {
-  body { font-size: 16px; }
-  h1 { padding-top: 0.9em; font-size: 2em; }
-  .mobile-only { display: none; }
-}
-
-/* Large Devices, Wide Screens */
-@media only screen and (min-width : 1200px) {
-  body { font-size: 14px; }
-  h1 { padding-top: 1.15em; font-size: 2em; }
-  .mobile-only { display: none; }
-
-}
-
-/* CSS */
-
-.description {
-  text-align: center;
-  padding: 1rem 0rem 1rem 0rem;
-}
-
-
-body, html {
-  font-family: 'Roboto', 'Inconsolata', sans-serif;
-  text-align: center;
-}
-
-svg {
-  /*border: 1px black solid;*/
-}
-
-.legend-text {
-  text-anchor: middle;
-  alignment-baseline: middle;
-  text-align: center;
-  font-size: .7rem;
-}
-
-.count-square:hover, .legend-rect-highlighted {
-  /*stroke: black;*/
-  stroke-width: 1px;
-  stroke: rgb(253,100,103); 
-}
-
-/* Axis styling */
-
-.axis path {
-  stroke: black;
-  opacity: 0.1;
-}
-
-/* Interaction styles */
-
-.caption-text {
-  font-size: 1rem;
-  text-anchor: middle;
-  alignment-baseline: middle;
-}
-
-.count-text {
-  font-size: 0.7rem;
-  text-anchor: middle;
-  alignment-baseline: middle;
-}
-
-.label-highlighted {
-  fill: white;
-}
-
-.highlight-rect, .caption-text {
-  fill: rgb(253,100,103);
-}
-
-.rect-hidden, .caption-hidden {
-  display: none;
-}
-
-</style>
-
-<script>
-
 const cellSize = 14;
 
-const margin = {top: 160, right: 20, bottom: 20, left: 125},
-      width = cellSize*52,
-      height = cellSize*32;
+const location_margin = {top: 160, right: 20, bottom: 20, left: 145},
+      location_width = cellSize*52,
+      location_height = cellSize*32;
 
 d3.csv("team_by_home_state.csv", function(error, data) {
   
@@ -185,13 +31,13 @@ d3.csv("team_by_home_state.csv", function(error, data) {
 
   const xScale = d3.scaleBand()
     .domain(states)
-    .range([0, width])
+    .range([0, location_width])
     .paddingInner(0.1)
     .paddingOuter(0);
 
   const yScale = d3.scaleBand()
     .domain(teams)
-    .range([0, height])
+    .range([0, location_height])
     .paddingInner(0.1)
     .paddingOuter(0);
 
@@ -204,10 +50,10 @@ d3.csv("team_by_home_state.csv", function(error, data) {
 
   const svg = d3.selectAll(".heatmap")
     .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", location_width + location_margin.left + location_margin.right)
+      .attr("height", location_height + location_margin.top + location_margin.bottom)
     .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + location_margin.left + "," + location_margin.top + ")");
 
   // Interactivity functions
 
@@ -220,9 +66,9 @@ d3.csv("team_by_home_state.csv", function(error, data) {
   }
 
   const mouseout = (d) => {
-    d3.selectAll(".t-"+_.kebabCase(d.team))
+    d3.selectAll(".location-t-"+_.kebabCase(d.team))
       .classed("label-highlighted", false)
-    d3.selectAll(".s-"+_.kebabCase(d.state))
+    d3.selectAll(".location-s-"+_.kebabCase(d.state))
       .classed("label-highlighted", false)
     d3.selectAll(".t-rect")
       .classed("rect-hidden", true)
@@ -230,12 +76,14 @@ d3.csv("team_by_home_state.csv", function(error, data) {
       .classed("rect-hidden", true)
     d3.selectAll(".caption")
       .classed("caption-hidden", true)
+    d3.selectAll(".count-square")
+      .classed("square-stroke-hidden", true)
   }
 
   const mousemove = (d) => {
-    d3.selectAll(".t-"+_.kebabCase(d.team))
+    d3.selectAll(".location-t-"+_.kebabCase(d.team))
       .classed("label-highlighted", true)
-    d3.selectAll(".s-"+_.kebabCase(d.state))
+    d3.selectAll(".location-s-"+_.kebabCase(d.state))
       .classed("label-highlighted", true)
     d3.selectAll(".t-rect")
       .classed("rect-hidden", false)
@@ -247,6 +95,8 @@ d3.csv("team_by_home_state.csv", function(error, data) {
       .text(d.count)
     d3.selectAll(".caption")
       .classed("caption-hidden", false)
+    d3.selectAll(".count-text")
+      .text((d.count == 1) ? "NBA fan" : "NBA fans")
   }
 
   // Construct the actual heatmap
@@ -254,9 +104,11 @@ d3.csv("team_by_home_state.csv", function(error, data) {
   svg.selectAll("rect")
     .data(data).enter()
     .append("rect")
-    .attr("class", "count-square")
+    .attr("class", d => "count-square square-t-"+_.kebabCase(d.team)+" square-s-"+_.kebabCase(d.state))
     .attr("x", d => xScale(d.state))
     .attr("y", d => yScale(d.team))
+    .classed("square-stroke-hidden", true)
+    .attr("stroke", "rgb(253,100,103)")
     .attr("width", xScale.bandwidth())
     .attr("height", yScale.bandwidth())
     .attr("fill", d => colorScale(d.count))
@@ -268,18 +120,18 @@ d3.csv("team_by_home_state.csv", function(error, data) {
 
   svg.append("rect")
     .attr("class", "highlight-rect t-rect")
-    .attr("x", -margin.left)
+    .attr("x", -location_margin.left)
     .attr("y", 0)
     .classed("rect-hidden", true)
-    .attr("width", margin.left)
+    .attr("width", location_margin.left)
     .attr("height", yScale.bandwidth());
 
   svg.append("rect")
     .attr("class", "highlight-rect s-rect")
-    .attr("y", -margin.left)
+    .attr("y", -(location_margin.top - 2*cellSize - 6))
     .attr("x", 0)
     .classed("rect-hidden", true)
-    .attr("height", margin.left)
+    .attr("height", location_margin.top - 2*cellSize - 6)
     .attr("width", xScale.bandwidth());
 
   // Add axes
@@ -292,7 +144,8 @@ d3.csv("team_by_home_state.csv", function(error, data) {
     .attr("class", "y axis")
     .call(yAxis)
   .selectAll("text")
-    .attr("class", d => "t-"+_.kebabCase(d));
+    .attr("dx", "-0.2rem")
+    .attr("class", d => "location-t-"+_.kebabCase(d));
 
   xAxis = d3.axisTop()
     .tickSize(0)
@@ -304,17 +157,95 @@ d3.csv("team_by_home_state.csv", function(error, data) {
   .selectAll("text")
     .attr("dx", "-0.5rem")
     .attr("dy", xScale.bandwidth()/4)
-    .attr("class", d => "s-"+_.kebabCase(d))
+    .attr("class", d => "location-s-"+_.kebabCase(d))
     .attr("transform", "rotate(90)")
     .attr("alignment-baseline", "middle")
     .style("text-anchor", "end");
+
+// Create rectangles behind each label to display aggregated results
+
+  const team_agg_data = data.reduce((prevVal, elem) => {
+    if (!(_.isUndefined(prevVal[elem.team]))) {
+      prevVal[elem.team] += parseInt(elem.count);
+    } else {
+      prevVal[elem.team] = 0;
+    }
+    return prevVal;
+  }, {}); 
+
+  const state_agg_data = data.reduce((prevVal, elem) => {
+    if (!(_.isUndefined(prevVal[elem.state]))) {
+      prevVal[elem.state] += parseInt(elem.count);
+    } else {
+      prevVal[elem.state] = 0;
+    }
+    return prevVal;
+  }, {}); 
+
+  console.log(state_agg_data);
+
+  teams.forEach(d => {
+    svg.selectAll(".team-rects")
+      .data([{team: d}]).enter()
+      .append("rect")
+      .attr("class", "highlight-rect t-rect-"+_.kebabCase(d))
+      .attr("x", -location_margin.left)
+      .attr("y", yScale(d))
+      .attr("opacity", 0)
+      .attr("width", location_margin.left)
+      .attr("height", yScale.bandwidth())
+      .on("mousemove", (t) => {
+        d3.selectAll(".caption-text")
+          .text(team_agg_data[t.team])
+        d3.selectAll(".caption")
+          .classed("caption-hidden", false)
+        d3.selectAll(".count-text")
+          .text((team_agg_data[t.team] == 1) ? "NBA fan" : "NBA fans");
+        d3.selectAll(".location-t-"+_.kebabCase(t.team))
+          .classed("label-highlighted", true)
+        d3.selectAll(".t-rect")
+          .classed("rect-hidden", false)
+          .attr("y", yScale(t.team))
+        d3.selectAll(".square-t-"+_.kebabCase(t.team))
+          .classed("square-stroke-hidden", false)
+      })
+      .on("mouseout", mouseout);
+  })
+
+  states.forEach(d => {
+    svg.selectAll(".state-rects")
+      .data([{state: d}]).enter()
+      .append("rect")
+      .attr("class", "highlight-rect s-rect-"+_.kebabCase(d))
+      .attr("y", -(location_margin.top - 2*cellSize - 6))
+      .attr("x", xScale(d))
+      .attr("opacity", 0)
+      .attr("height", location_margin.top - 2*cellSize - 6)
+      .attr("width", xScale.bandwidth())
+      .on("mousemove", (s) => {
+        d3.selectAll(".caption-text")
+          .text(state_agg_data[s.state])
+        d3.selectAll(".caption")
+          .classed("caption-hidden", false)
+        d3.selectAll(".count-text")
+          .text((state_agg_data[s.state] == 1) ? "NBA fan" : "NBA fans");
+        d3.selectAll(".location-s-"+_.kebabCase(s.state))
+          .classed("label-highlighted", true)
+        d3.selectAll(".s-rect")
+          .classed("rect-hidden", false)
+          .attr("x", xScale(s.state))
+        d3.selectAll(".square-s-"+_.kebabCase(s.state))
+          .classed("square-stroke-hidden", false)
+      })
+      .on("mouseout", mouseout);
+  })
 
   // Add legend
   // Roll my own implementation 
 
   const legend = svg.append("g")
       // center the legend
-      .attr("transform", "translate(" + (((width + margin.left + margin.right)/2) - margin.left - ((2*cellSize + 1) * cellNumbers.length / 2)) + ",-" + (margin.top) + ")");
+      .attr("transform", "translate(" + (((location_width + location_margin.left + location_margin.right)/2) - location_margin.left - ((2*cellSize + 1) * cellNumbers.length / 2)) + ",-" + (location_margin.top) + ")");
 
   // Add rects
 
@@ -342,17 +273,15 @@ d3.csv("team_by_home_state.csv", function(error, data) {
     .attr("class", "caption-text caption")
     .attr("y", 0)
     .attr("x", 0)
-    .attr("transform", "translate(" + (-margin.left/2) + "," + (-margin.top/4 - 16) + ")")
+    .attr("transform", "translate(" + (-location_margin.left/2) + "," + (-location_margin.top/4 - 16) + ")")
     .text("");
 
   const countText = svg.append("text")
     .attr("class", "count-text caption")
     .attr("y", 0)
     .attr("x", 0)
-    .attr("transform", "translate(" + (-margin.left/2) + "," + (-margin.top/4) + ")")
+    .attr("transform", "translate(" + (-location_margin.left/2) + "," + (-location_margin.top/4) + ")")
     .text("NBA fans")
     .classed("caption-hidden", true);
 
 });
-
-</script>
